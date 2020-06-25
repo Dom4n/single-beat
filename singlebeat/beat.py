@@ -10,8 +10,8 @@ import signal
 import tornado.ioloop
 import tornado.process
 import subprocess
-from tornadis import PubSubClient
-from tornado import gen
+# from tornadis import PubSubClient
+# from tornado import gen
 
 
 def noop(i):
@@ -79,12 +79,12 @@ class Config(object):
         else:
             self._redis = redis.Redis.from_url(self.rewrite_redis_url())
 
-    def get_async_redis_client(self):
-        conn = self.get_redis().connection_pool\
-            .get_connection('ping')
-        host, port, password = conn.host, conn.port, conn.password
-        client = PubSubClient(host=host, port=port, password=password, autoconnect=True)
-        return client
+    # def get_async_redis_client(self):
+    #     conn = self.get_redis().connection_pool\
+    #         .get_connection('ping')
+    #     host, port, password = conn.host, conn.port, conn.password
+    #     client = PubSubClient(host=host, port=port, password=password, autoconnect=True)
+    #     return client
 
     def get_host_identifier(self):
         """\
@@ -143,13 +143,13 @@ class Process(object):
         signal.signal(signal.SIGTERM, self.sigterm_handler)
         signal.signal(signal.SIGINT, self.sigterm_handler)
 
-        self.async_redis = config.get_async_redis_client()
+        # self.async_redis = config.get_async_redis_client()
         self.fence_token = 0
         self.sprocess = None
         self.pc = None
         self.state = 'WAITING'
         self.ioloop = tornado.ioloop.IOLoop.instance()
-        self.ioloop.spawn_callback(self.wait_for_commands)
+        # self.ioloop.spawn_callback(self.wait_for_commands)
 
     def proc_exit_cb(self, exit_status):
         """When child exits we use the same exit status code"""
@@ -305,8 +305,8 @@ class Process(object):
 
         self.sprocess.set_exit_callback(self.proc_exit_cb)
         #
-        self.sprocess.stdout.read_until_close(streaming_callback=self.stdout_read_cb)
-        self.sprocess.stderr.read_until_close(streaming_callback=self.stderr_read_cb)
+        self.sprocess.stdout.read_until_close()
+        self.sprocess.stderr.read_until_close()
 
     def cli_command_info(self, msg):
         info = ''
@@ -416,14 +416,14 @@ class Process(object):
             'info': info or ''
         }))
 
-    @gen.coroutine
-    def wait_for_commands(self):
-        logger.info('subscribed to %s', 'SB_{}'.format(self.identifier))
-        yield self.async_redis.pubsub_subscribe('SB_{}'.format(self.identifier))
-        logger.debug('subcribed to redis channel %s', 'SB_{}'.format(self.identifier))
-        while True:
-            msg = yield self.async_redis.pubsub_pop_message()
-            self.pubsub_callback(msg)
+    # @gen.coroutine
+    # def wait_for_commands(self):
+    #     logger.info('subscribed to %s', 'SB_{}'.format(self.identifier))
+    #     yield self.async_redis.pubsub_subscribe('SB_{}'.format(self.identifier))
+    #     logger.debug('subcribed to redis channel %s', 'SB_{}'.format(self.identifier))
+    #     while True:
+    #         msg = yield self.async_redis.pubsub_pop_message()
+    #         self.pubsub_callback(msg)
 
 
 def run_process():

@@ -13,9 +13,9 @@ setup(
     packages=['singlebeat'],
     zip_safe=True,
     install_requires=[
-        'tornado>=4.2.1,<6.0',
+        'tornado>=4.2.1,<7.0',
         'redis >= 2.9.1',
-        'tornadis>=0.8.1',
+        # 'tornadis>=0.8.1',
         'Click>=7.0'
     ],
     test_require=[
