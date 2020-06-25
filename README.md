@@ -1,3 +1,15 @@
+WHY FORK?
+---------
+I`m using Tornado version >=6 but single-beat has requirement <6.  
+This requirement is only needed for CLI commands, as CLI uses https://github.com/thefab/tornadis
+which is incopatible with Tornado >=6.
+
+If someone wants to fix it then error message is as follows:  
+```AttributeError: module 'tornado.gen' has no attribute 'Task'```  
+It is used here: https://github.com/Dom4n/single-beat/blob/master/singlebeat/beat.py#L86
+
+I don`t need CLI so I commented out everything related.
+
 Single-beat
 ---------
 Single-beat is a nice little application that ensures only one instance of your process runs across your servers.
